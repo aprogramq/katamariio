@@ -96,6 +96,29 @@ public class KatamariCommands {
                                 )
                         )
                 )
+
+                // /katamari blocks reset <targets>
+                .then(Commands.literal("resetBlocks")
+                        .then(Commands.argument("targets", EntityArgument.players())
+                                .executes(ctx -> {
+                                        Collection<ServerPlayer> players = EntityArgument.getPlayers(ctx, "targets");
+                                        players.forEach(p -> {
+                                            ICustomPlayerData data = (ICustomPlayerData) p;
+                                            data.katamariIO$setFlagAndSizeAndRestitution(
+                                                    data.katamariIO$getFlag(),
+                                                    KatamariIO.DEFAULT_BALL_SIZE,
+                                                    KatamariIO.DEFAULT_BALL_SIZE,
+                                                    data.katamariIO$getRestitutionCoefficient()
+                                            );
+                                            data.katamariIO$clearAttachedBlocks();
+                                        });
+                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                ChatFormatting.GOLD + "[KatamariIO] " + ChatFormatting.GREEN + "Cleared attached blocks for " +
+                                                        ChatFormatting.AQUA + players.size() + ChatFormatting.GREEN + " player(s)."), true);
+                                        return players.size();
+                                })
+                        )
+                )
         );
     }
 }
